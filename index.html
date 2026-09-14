@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0e1a">
+<title>🎯 CENTER LOCK</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0a0e1a;
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+    user-select: none;
+  }
+
+  /* ============ LOGIN SCREEN ============ */
+  #loginScreen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 24px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .logo {
+    font-size: 28px;
+    font-weight: 900;
+    color: #00ff88;
+    letter-spacing: 3px;
+    text-align: center;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+  }
+
+  .sub {
+    color: #94a3b8;
+    text-align: center;
+    margin-top: 8px;
+    margin-bottom: 24px;
+    font-size: 14px;
+  }
+
+  .notice-box {
+    background: #422006;
+    padding: 12px;
+    border-radius: 10px;
+    border-left: 3px solid #fbbf24;
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: #fde047;
+    display: none;
+  }
+
+  .hwid-box {
+    background: #111827;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #1f2937;
+    margin-bottom: 12px;
+  }
+
+  .hwid-label {
+    color: #4b5563;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+
+  .hwid-code {
+    color: #00ff88;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 4px;
+    letter-spacing: 1px;
+    word-break: break-all;
+  }
+
+  .key-input {
+    width: 100%;
+    background: #111827;
+    color: #00ff88;
+    font-size: 18px;
+    padding: 16px;
+    border-radius: 12px;
+    border: 2px solid #1f2937;
+    text-align: center;
+    letter-spacing: 2px;
+    font-weight: 700;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+
+  .key-input:focus { border-color: #00ff88; }
+  .key-input::placeholder { color: #4b5563; letter-spacing: 2px; }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    margin-top: 16px;
+    cursor: pointer;
+  }
+
+  .checkbox {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 2px solid #4b5563;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .checkbox.on {
+    background: #00ff88;
+    border-color: #00ff88;
+  }
+
+  .checkbox.on::after {
+    content: '✓';
+    color: #0a0e1a;
+    font-weight: 900;
+    font-size: 14px;
+  }
+
+  .toggle-text { color: #94a3b8; font-size: 14px; }
+
+  .btn-main {
+    width: 100%;
+    background: #00ff88;
+    color: #0a0e1a;
+    padding: 18px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: 2px;
+    margin-top: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+  }
+
+  .btn-main:active { transform: scale(0.97); }
+  .btn-main:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .hint {
+    color: #4b5563;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #0a0e1a;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ============ MENU SCREEN ============ */
+  #menuScreen {
+    display: none;
+    min-height: 100vh;
+    padding-bottom: 220px;
+  }
+
+  .header {
+    padding: 24px 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .header .logo { font-size: 20px; text-align: left; }
+
+  .tier-row {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+    gap: 10px;
+  }
+
+  .tier {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: #422006;
+    color: #fbbf24;
+  }
+
+  .tier.vip { background: #713f12; color: #fde047; }
+
+  .active-count { color: #94a3b8; font-size: 12px; }
+
+  .logout-btn {
+    background: none;
+    border: none;
+    color: #ef4444;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 8px;
+    font-family: inherit;
+  }
+
+  .key-display {
+    margin: 20px 20px 0;
+    background: #111827;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #1f2937;
+  }
+
+  .key-display .divider {
+    height: 1px;
+    background: #1f2937;
+    margin: 10px 0;
+  }
+
+  .key-value {
+    color: #00ff88;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 4px;
+    letter-spacing: 1px;
+    word-break: break-all;
+  }
+
+  .hwid-value {
+    color: #94a3b8;
+    font-size: 12px;
+    margin-top: 4px;
+    letter-spacing: 1px;
+    word-break: break-all;
+  }
+
+  .features-list {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .card {
+    display: flex;
+    align-items: center;
+    background: #111827;
+    padding: 16px;
+    border-radius: 14px;
+    border: 1px solid #1f2937;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .card:active { transform: scale(0.98); }
+
+  .card.on {
+    border-color: #00ff88;
+    background: #0a1f16;
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
+  }
+
+  .card.locked { opacity: 0.5; cursor: not-allowed; }
+
+  .card-icon { font-size: 28px; margin-right: 14px; flex-shrink: 0; }
+
+  .card-body { flex: 1; min-width: 0; }
+
+  .card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .card-name { color: #fff; font-size: 16px; font-weight: 800; }
+
+  .pro-badge {
+    color: #fde047;
+    background: #713f12;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+  }
+
+  .lock-badge { font-size: 12px; }
+
+  .card-desc { color: #94a3b8; font-size: 12px; margin-top: 3px; }
+
+  /* Toggle switch */
+  .switch {
+    width: 50px;
+    height: 28px;
+    background: #374151;
+    border-radius: 14px;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .switch.on { background: #00ff88; }
+
+  .switch::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    background: #9ca3af;
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+
+  .switch.on::after {
+    left: 25px;
+    background: #0a0e1a;
+  }
+
+  /* ============ ACTION BAR (MỞ FF) ============ */
+  .action-bar {
+    position: fixed;
+    bottom: 90px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .btn-ff {
+    flex: 1;
+    padding: 18px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ff6b00, #ff2d00);
+    color: #fff;
+    font-weight: 900;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 8px 30px rgba(255, 107, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    animation: ffPulse 2s ease-in-out infinite;
+    transition: transform 0.15s;
+  }
+
+  .btn-ff:active { transform: scale(0.96); }
+  .btn-ff:disabled { opacity: 0.5; animation: none; cursor: wait; }
+
+  @keyframes ffPulse {
+    0%, 100% { box-shadow: 0 8px 30px rgba(255, 107, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) inset; }
+    50% { box-shadow: 0 8px 45px rgba(255, 107, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.2) inset; }
+  }
+
+  .btn-fallback {
+    width: 54px;
+    border: 1px solid #1f2937;
+    border-radius: 14px;
+    background: #111827;
+    color: #94a3b8;
+    font-size: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .btn-fallback:active { transform: scale(0.96); background: #1f2937; }
+
+  /* ============ BOTTOM BAR ============ */
+  .bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    gap: 10px;
+    padding: 16px;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    background: #0a0e1a;
+    border-top: 1px solid #1f2937;
+    z-index: 100;
+  }
+
+  .bottom-bar button {
+    flex: 1;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .bottom-bar button:active { transform: scale(0.97); }
+
+  .btn-on { background: #00ff88; color: #0a0e1a; }
+  .btn-off { background: #374151; color: #0a0e1a; }
+
+  /* ============ NÚT ÂM THANH ============ */
+  .btn-sound {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #111827;
+    border: 1px solid #1f2937;
+    color: #00ff88;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .btn-sound:active { transform: scale(0.9); }
+  .btn-sound.muted { color: #4b5563; border-color: #374151; }
+
+  @keyframes soundPing {
+    0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.6); }
+    100% { box-shadow: 0 0 0 12px rgba(0, 255, 136, 0); }
+  }
+
+  .btn-sound.ping { animation: soundPing 0.4s ease-out; }
+
+  /* ============ MODAL ============ */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: flex-end;
+    z-index: 9998;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .modal-overlay.show { opacity: 1; pointer-events: all; }
+
+  .modal-sheet {
+    width: 100%;
+    background: #111827;
+    border-radius: 24px 24px 0 0;
+    padding: 24px;
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+    transform: translateY(100%);
+    transition: transform 0.3s;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .modal-overlay.show .modal-sheet { transform: translateY(0); }
+
+  .modal-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .modal-sub {
+    color: #94a3b8;
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .modal-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: #0a0e1a;
+    border: 1px solid #1f2937;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .modal-option:active {
+    transform: scale(0.98);
+    border-color: #ff6b00;
+  }
+
+  .modal-option .icon { font-size: 28px; flex-shrink: 0; }
+  .modal-option .text { flex: 1; }
+  .modal-option .title { color: #fff; font-weight: 700; font-size: 15px; }
+  .modal-option .desc { color: #94a3b8; font-size: 12px; margin-top: 3px; }
+
+  .modal-cancel {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 1px solid #374151;
+    border-radius: 12px;
+    color: #94a3b8;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 8px;
+  }
+
+  /* ============ TOAST ============ */
+  #toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-120%);
+    background: #111827;
+    color: #fff;
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: 1px solid #1f2937;
+    font-size: 14px;
+    z-index: 10001;
+    transition: transform 0.3s;
+    max-width: 90vw;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.success { border-color: #00ff88; color: #00ff88; }
+  #toast.error { border-color: #ef4444; color: #ef4444; }
+
+  /* ============ LOADING ============ */
+  #loading {
+    position: fixed;
+    inset: 0;
+    background: #0a0e1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    gap: 16px;
+  }
+
+  #loading.hide { display: none; }
+
+  #loading .spinner-lg {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #1f2937;
+    border-top-color: #00ff88;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  #loading p { color: #94a3b8; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<!-- ============ NÚT ÂM THANH ============ -->
+<button class="btn-sound" id="btnSound" title="Bật/tắt âm thanh">🔊</button>
+
+<!-- ============ LOADING ============ -->
+<div id="loading">
+  <div class="spinner-lg"></div>
+  <p>Đang tải...</p>
+</div>
+
+<!-- ============ LOGIN SCREEN ============ -->
+<div id="loginScreen">
+  <div class="logo">🎯 CENTER LOCK</div>
+  <div class="sub">Nhập key để mở khóa</div>
+
+  <div id="noticeBox" class="notice-box"></div>
+
+  <div class="hwid-box">
+    <div class="hwid-label">THIẾT BỊ HIỆN TẠI</div>
+    <div class="hwid-code" id="hwidLogin">🆔 ...</div>
+  </div>
+
+  <input
+    type="text"
+    id="keyInput"
+    class="key-input"
+    placeholder="DST-000-654"
+    autocomplete="off"
+    autocapitalize="characters"
+    spellcheck="false"
+  >
+
+  <div class="toggle-row" id="toggleRemember">
+    <div class="checkbox on" id="cbRemember"></div>
+    <span class="toggle-text">Ghi nhớ key</span>
+  </div>
+
+  <button class="btn-main" id="btnVerify">🔓 XÁC MINH</button>
+
+  <div class="hint">Key mặc định: DST-000-654</div>
+</div>
+
+<!-- ============ MENU SCREEN ============ -->
+<div id="menuScreen">
+  <div class="header">
+    <div style="flex:1">
+      <div class="logo">🎯 CENTER LOCK</div>
+      <div class="tier-row">
+        <span class="tier" id="tierBadge">⭐ BASIC</span>
+        <span class="active-count" id="activeCount">Bật: 0/7</span>
+      </div>
+    </div>
+    <button class="logout-btn" id="btnLogout">Thoát</button>
+  </div>
+
+  <div class="key-display">
+    <div class="hwid-label">KEY</div>
+    <div class="key-value" id="keyDisplay">-</div>
+    <div class="divider"></div>
+    <div class="hwid-label">THIẾT BỊ</div>
+    <div class="hwid-value" id="hwidMenu">🆔 -</div>
+  </div>
+
+  <div class="features-list" id="featuresList"></div>
+
+  <!-- Nút mở FF -->
+  <div class="action-bar">
+    <button class="btn-ff" id="btnOpenFF">🎮 MỞ FREE FIRE</button>
+    <button class="btn-fallback" id="btnFallback" title="Mở bằng cách khác">↗</button>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="bottom-bar">
+    <button class="btn-on" id="btnAllOn">⚡ BẬT TẤT CẢ</button>
+    <button class="btn-off" id="btnAllOff">⛔ TẮT TẤT CẢ</button>
+  </div>
+</div>
+
+<!-- ============ MODAL MỞ FF ============ -->
+<div class="modal-overlay" id="ffModal">
+  <div class="modal-sheet">
+    <div class="modal-title">🎮 Mở Free Fire</div>
+    <div class="modal-sub">Chọn cách mở phù hợp với thiết bị</div>
+
+    <div class="modal-option" data-method="deeplink">
+      <div class="icon">📱</div>
+      <div class="text">
+        <div class="title">Mở trực tiếp FF</div>
+        <div class="desc">Dùng deep link — nhanh nhất</div>
+      </div🤖>
+    </div>
+
+    <div class="modal-</option" data-method="intentdiv">
+      <div class="icon">>
+      <div class="text">
+        <div class="title">Mở bằng Android Intent</div>
+        <div class="desc">Chỉ hoạt động trên Android</div>
+      </div>
+    </div>
+
+    <div class="modal-option" data-method="store">
+      <div class="icon">🏪</div>
+      <div class="text">
+        <div class="title">Mở cửa hàng ứng dụng</div>
+        <div class="desc">CH Play / App Store (an toàn nhất)</div>
+      </div>
+    </div>
+
+    <button class="modal-cancel" onclick="closeFFModal()">Hủy</button>
+  </div>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div id="toast"></div>
+
+<script>
+/* ============================================================
+   🔊 SOUND ENGINE — Web Audio API
+   ============================================================ */
+const Sound = (() => {
+  let ctx = null;
+  let enabled = localStorage.getItem('@cl_sound') !== 'off';
+  let volume = 0.25;
+
+  function init() {
+    if (!ctx) {
+      try {
+        ctx = new (window.AudioContext || window.webkitAudioContext)();
+      } catch (e) {
+        console.warn('AudioContext không khả dụng');
+      }
+    }
+    if (ctx && ctx.state === 'suspended') ctx.resume();
+  }
+
+  function tone({ freq = 440, duration = 0.15, type = 'sine', vol = 1, delay = 0 }) {
+    if (!enabled) return;
+    init();
+    if (!ctx) return;
+
+    const t0 = ctx.currentTime + delay;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
+
+    gain.gain.setValueAtTime(0, t0);
+    gain.gain.linearRampToValueAtTime(volume * vol, t0 + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(t0);
+    osc.stop(t0 + duration + 0.05);
+  }
+
+  function melody(notes, gap = 0.08) {
+    notes.forEach((n, i) => {
+      tone({
+        freq: n.freq,
+        duration: n.duration || 0.15,
+        type: n.type || 'sine',
+        vol: n.vol || 1,
+        delay: i * gap,
+      });
+    });
+  }
+
+  const sounds = {
+    click:   () => tone({ freq: 800, duration: 0.05, type: 'square', vol: 0.5 }),
+    toggleOn: () => melody([
+      { freq: 660, duration: 0.08 },
+      { freq: 990, duration: 0.12 },
+    ], 0.05),
+    toggleOff: () => melody([
+      { freq: 660, duration: 0.08 },
+      { freq: 440, duration: 0.12 },
+    ], 0.05),
+    success: () => melody([
+      { freq: 523, duration: 0.12 },
+      { freq: 659, duration: 0.12 },
+      { freq: 784, duration: 0.2 },
+    ], 0.1),
+    error: () => melody([
+      { freq: 330, duration: 0.15, type: 'sawtooth' },
+      { freq: 262, duration: 0.25, type: 'sawtooth' },
+    ], 0.12),
+    launch: () => melody([
+      { freq: 400, duration: 0.05 },
+      { freq: 600, duration: 0.05 },
+      { freq: 800, duration: 0.05 },
+      { freq: 1200, duration: 0.15 },
+    ], 0.04),
+    power: () => melody([
+      { freq: 523, duration: 0.08 },
+      { freq: 659, duration: 0.08 },
+      { freq: 784, duration: 0.08 },
+      { freq: 1047, duration: 0.2 },
+    ], 0.08),
+    bye: () => melody([
+      { freq: 523, duration: 0.12 },
+      { freq: 392🎯, duration: 0.2 },
+    ],', 0.1),
+    login: () => desc melody([
+      { freq:: 392, duration: 0.1 },
+      ' { freq: 523, duration: 0.1 },
+      { freq: 659, duration: 0.1 },
+      { freq: 784, duration: 0.25 },
+    ], 0.08),
+  };
+
+  return {
+    play(name) {
+      if (!enabled) return;
+      init();
+      const fn = sounds[name] || sounds.click;
+      try { fn(); } catch (e) { console.warn('Sound error:', e); }
+    },
+    toggle() {
+      enabled = !enabled;
+      localStorage.setItem('@cl_sound', enabled ? 'on' : 'off');
+      if (enabled) {
+        init();
+        setTimeout(() => this.play('toggleOn'), 50);
+      }
+      return enabled;
+    },
+    isEnabled() { return enabled; },
+    init,
+  };
+})();
+
+/* ============================================================
+   🎮 CẤU HÌNH CHỨC NĂNG
+   ============================================================ */
+const FEATURES = [
+  { id: 'aimlock', name: 'Aimlock',  icon: 'Khóa tâm tự động',      pro: false },
+  { id: 'nhetam',  name: 'Nhẹ tâm',  icon: '🧘', desc: 'Giảm giật khi ngắm',   pro: false },
+  { id: 'bamdan',  name: 'Bám đầu',  icon: '🎪', desc: 'Theo dõi đầu đối thủ', pro: true  },
+  { id: 'fixrung', name: 'Fix rung', icon: '📳', desc: 'Chống rung màn hình',  pro: false },
+  { id: 'fixlo',   name: 'Fix lố',   icon: '📐', desc: 'Chỉnh lệch tâm',        pro: true  },
+  { id: 'aimdrag', name: 'Aimdrag',  icon: '🖱️', desc: 'Kéo tâm mượt',         pro: true  },
+  { id: 'aimco',   name: 'Aimco',    icon: '🎯', desc: 'Tâm ngắm tùy chỉnh',   pro: false },
+];
+
+/* 🔑 KEY OFFLINE */
+const LOCAL_KEYS = [
+  { key: 'DST-000-654', tier: 'vip', active: true, expires: null, maxDevices: 5, hwids: [] },
+];
+
+/* 🔗 Link keys.json (để trống nếu chỉ dùng LOCAL_KEYS) */
+const KEYS_URL = '';
+
+/* ============================================================
+   🆔 HWID
+   ============================================================ */
+function getHWID() {
+  let id = localStorage.getItem('@cl_hwid');
+  if (!id) {
+    id = 'DEV-' + Math.random().toString(36).slice(2, 10).toUpperCase();
+    localStorage.setItem('@cl_hwid', id);
+  }
+  return id;
+}
+
+/* ============================================================
+   🍞 TOAST
+   ============================================================ */
+let toastTimer;
+function toast(msg, type = 'info') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    el.className = type;
+  }, 2500);
+}
+
+/* ============================================================
+   📥 FETCH KEYS
+   ============================================================ */
+async function fetchKeys() {
+  if (!KEYS_URL) return { source: 'local', data: { keys: LOCAL_KEYS, notice: '' } };
+
+  try {
+    const res = await fetch(KEYS_URL + '?t=' + Date.now(), { cache: 'no-cache' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    localStorage.setItem('@cl_keys_cache', JSON.stringify(data));
+    return { source: 'network', data };
+  } catch (e) {
+    const cached = localStorage.getItem('@cl_keys_cache');
+    if (cached) return { source: 'cache', data: JSON.parse(cached) };
+    return { source: 'local', data: { keys: LOCAL_KEYS, notice: '' } };
+  }
+}
+
+/* ============================================================
+   🔐 XÁC MINH KEY
+   ============================================================ */
+async function verifyKey(inputKey) {
+  const clean = inputKey.trim().toUpperCase();
+
+  if (!/^[A-Z0-9]+-[A-Z0-9]+-[A-Z0-9]+$/.test(clean)) {
+    return { valid: false, reason: 'format', msg: 'Sai định dạng (VD: DST-000-654)' };
+  }
+
+  const myHwid = getHWID();
+  const { data } = await fetchKeys();
+
+  const record = data.keys.find((k) => k.key === clean);
+  if (!record) return { valid: false, reason: 'invalid', msg: 'Key không tồn tại' };
+  if (!record.active) return { valid: false, reason: 'banned', msg: 'Key đã bị khóa' };
+  if (record.expires && Date.now() > new Date(record.expires).getTime()) {
+    return { valid: false, reason: 'expired', msg: 'Key hết hạn ' + record.expires };
+  }
+
+  const hwids = record.hwids || [];
+  const maxDev = record.maxDevices || 1;
+  const bound = hwids.includes(myHwid);
+
+  if (!bound) {
+    if (hwids.length >= maxDev) {
+      return { valid: false, reason: 'device_limit', msg: `Key đã dùng ${maxDev}/${maxDev} thiết bị` };
+    }
+    registerHWIDLocal(clean, myHwid);
+    return {
+      valid: true,
+      tier: record.tier || 'basic',
+      isNewDevice: true,
+      slotsLeft: maxDev - (hwids.length + 1),
+      hwid: myHwid,
+    };
+  }
+
+  return {
+    valid: true,
+    tier: record.tier || 'basic',
+    isNewDevice: false,
+    slotsLeft: maxDev - hwids.length,
+    hwid: myHwid,
+  };
+}
+
+function registerHWIDLocal(key, hwid) {
+  try {
+    const raw = localStorage.getItem('@cl_hwid_registry') || '{}';
+    const reg = JSON.parse(raw);
+    reg[key] = reg[key] || [];
+    if (!reg[key].includes(hwid)) reg[key].push(hwid);
+    localStorage.setItem('@cl_hwid_registry', JSON.stringify(reg));
+  } catch (e) {}
+}
+
+/* ============================================================
+   🎨 RENDER MENU
+   ============================================================ */
+function getFeatureStates() {
+  try { return JSON.parse(localStorage.getItem('@cl_features') || '{}'); }
+  catch { return {}; }
+}
+
+function saveFeatureStates(states) {
+  localStorage.setItem('@cl_features', JSON.stringify(states));
+}
+
+function renderFeatures(tier) {
+  const states = getFeatureStates();
+  const list = document.getElementById('featuresList');
+  list.innerHTML = '';
+
+  FEATURES.forEach((f) => {
+    const locked = f.pro && tier !== 'vip';
+    const on = !!states[f.id];
+
+    const card = document.createElement('div');
+    card.className = 'card' + (on ? ' on' : '') + (locked ? ' locked' : '');
+    card.innerHTML = `
+      <div class="card-icon">${f.icon}</div>
+      <div class="card-body">
+        <div class="card-title-row">
+          <span class="card-name">${f
