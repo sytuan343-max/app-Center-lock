@@ -47,7 +47,7 @@
 
   /* ============ SCREENS ============ */
   .screen {
-    display: none !important;
+    display: none;
     min-height: 100vh;
     max-width: 480px;
     margin: 0 auto;
@@ -56,7 +56,7 @@
     justify-content: center;
     box-sizing: border-box;
   }
-  .screen.active { display: flex !important; }
+  .screen.active { display: flex; }
 
   /* ============ SCREEN 1: KEY ============ */
   #screenKey .logo {
@@ -72,32 +72,8 @@
     color: #94a3b8;
     text-align: center;
     margin-top: 8px;
-    margin-bottom: 24px;
+    margin-bottom: 40px;
     font-size: 14px;
-  }
-
-  .hwid-box {
-    background: #111827;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #1f2937;
-    margin-bottom: 12px;
-  }
-
-  .hwid-label {
-    color: #4b5563;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
-  }
-
-  .hwid-code {
-    color: #00ff88;
-    font-size: 13px;
-    font-weight: 700;
-    margin-top: 4px;
-    letter-spacing: 1px;
-    word-break: break-all;
   }
 
   .key-input {
@@ -117,7 +93,12 @@
   }
 
   .key-input:focus { border-color: #00ff88; }
-  .key-input::placeholder { color: #4b5563; letter-spacing: 1px; font-weight: 500; }
+  .key-input::placeholder {
+    color: #4b5563;
+    letter-spacing: 1px;
+    font-weight: 500;
+    font-size: 15px;
+  }
 
   .toggle-row {
     display: flex;
@@ -231,7 +212,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 16px;
+    margin-bottom: 24px;
   }
 
   .header .logo {
@@ -271,37 +252,6 @@
     cursor: pointer;
     padding: 8px;
     font-family: inherit;
-  }
-
-  .key-display {
-    background: #111827;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #1f2937;
-    margin-bottom: 16px;
-  }
-
-  .key-display .divider {
-    height: 1px;
-    background: #1f2937;
-    margin: 10px 0;
-  }
-
-  .key-value {
-    color: #00ff88;
-    font-size: 13px;
-    font-weight: 700;
-    margin-top: 4px;
-    letter-spacing: 1px;
-    word-break: break-all;
-  }
-
-  .hwid-value {
-    color: #94a3b8;
-    font-size: 12px;
-    margin-top: 4px;
-    letter-spacing: 1px;
-    word-break: break-all;
   }
 
   .features-list {
@@ -583,7 +533,6 @@
 </head>
 <body>
 
-<!-- NÚT ÂM THANH -->
 <button class="btn-sound" id="btnSound" title="Bật/tắt âm thanh">🔊</button>
 
 <!-- ============ SCREEN 1: XÁC MINH KEY ============ -->
@@ -591,19 +540,15 @@
   <div class="logo">🎯 CENTER LOCK</div>
   <div class="sub">Nhập key để mở khóa</div>
 
-  <div class="hwid-box">
-    <div class="hwid-label">THIẾT BỊ HIỆN TẠI</div>
-    <div class="hwid-code" id="hwidLogin">🆔 ...</div>
-  </div>
-
   <input
     type="text"
     id="keyInput"
     class="key-input"
-    placeholder="Nhập key..."
-    autocomplete="off"
+    placeholder="Nhập key tại đây..."
+    autocomplete="new-password"
     autocapitalize="characters"
     spellcheck="false"
+    readonly
   >
 
   <div class="toggle-row" id="toggleRemember">
@@ -634,14 +579,6 @@
       </div>
     </div>
     <button class="logout-btn" id="btnLogout">Thoát</button>
-  </div>
-
-  <div class="key-display">
-    <div class="hwid-label">KEY</div>
-    <div class="key-value" id="keyDisplay">-</div>
-    <div class="divider"></div>
-    <div class="hwid-label">THIẾT BỊ</div>
-    <div class="hwid-value" id="hwidMenu">🆔 -</div>
   </div>
 
   <div class="features-list" id="featuresList"></div>
@@ -705,7 +642,7 @@ const Sound = (() => {
   function init() {
     if (!ctx) {
       try { ctx = new (window.AudioContext || window.webkitAudioContext)(); }
-      catch (e) { console.warn('AudioContext lỗi'); }
+      catch (e) {}
     }
     if (ctx && ctx.state === 'suspended') ctx.resume();
   }
@@ -714,34 +651,23 @@ const Sound = (() => {
     if (!enabled) return;
     init();
     if (!ctx) return;
-
     const t0 = ctx.currentTime + delay;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-
     osc.type = type;
     osc.frequency.setValueAtTime(freq, t0);
-
     gain.gain.setValueAtTime(0, t0);
     gain.gain.linearRampToValueAtTime(volume * vol, t0 + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
-
     osc.connect(gain);
     gain.connect(ctx.destination);
-
     osc.start(t0);
     osc.stop(t0 + duration + 0.05);
   }
 
   function melody(notes, gap = 0.08) {
     notes.forEach((n, i) => {
-      tone({
-        freq: n.freq,
-        duration: n.duration || 0.15,
-        type: n.type || 'sine',
-        vol: n.vol || 1,
-        delay: i * gap,
-      });
+      tone({ freq: n.freq, duration: n.duration || 0.15, type: n.type || 'sine', vol: n.vol || 1, delay: i * gap });
     });
   }
 
@@ -762,7 +688,7 @@ const Sound = (() => {
       if (!enabled) return;
       init();
       const fn = sounds[name] || sounds.click;
-      try { fn(); } catch (e) { console.warn('Sound error:', e); }
+      try { fn(); } catch (e) {}
     },
     toggle() {
       enabled = !enabled;
@@ -788,14 +714,10 @@ const FEATURES = [
   { id: 'aimco',   name: 'Aimco',    icon: '🎯', desc: 'Tâm ngắm tùy chỉnh',   pro: false },
 ];
 
-/* 🔑 KEY DUY NHẤT ĐƯỢC CHẤP NHẬN */
-const LOCAL_KEYS = [
-  { key: 'DST-000-654', tier: 'vip', active: true, expires: null, maxDevices: 5, hwids: [] },
-];
+/* 🔑 KEY DUY NHẤT HỢP LỆ */
+const VALID_KEY = 'DST-000-654';
+const VALID_TIER = 'vip';
 
-const KEYS_URL = '';
-
-/* FF Config */
 const FF_ANDROID_PACKAGE = 'com.dts.freefireth';
 const FF_ANDROID_MAX = 'com.dts.freefiremax';
 const FF_IOS_ID = '1300146617';
@@ -803,23 +725,12 @@ const FF_PLAY_STORE = `https://play.google.com/store/apps/details?id=${FF_ANDROI
 const FF_APP_STORE = `https://apps.apple.com/vn/app/id${FF_IOS_ID}`;
 
 /* ============================================================
-   🆔 HWID
-   ============================================================ */
-function getHWID() {
-  let id = localStorage.getItem('@cl_hwid');
-  if (!id) {
-    id = 'DEV-' + Math.random().toString(36).slice(2, 10).toUpperCase();
-    localStorage.setItem('@cl_hwid', id);
-  }
-  return id;
-}
-
-/* ============================================================
    🍞 TOAST
    ============================================================ */
 let toastTimer;
 function toast(msg, type = 'info') {
   const el = document.getElementById('toast');
+  if (!el) return;
   el.textContent = msg;
   el.className = 'show ' + type;
   clearTimeout(toastTimer);
@@ -838,35 +749,395 @@ function showScreen(id) {
 }
 
 /* ============================================================
-   📥 FETCH KEYS
+   🔐 XÁC MINH KEY
    ============================================================ */
-async function fetchKeys() {
-  if (!KEYS_URL) return { source: 'local', data: { keys: LOCAL_KEYS, notice: '' } };
-
-  try {
-    const res = await fetch(KEYS_URL + '?t=' + Date.now(), { cache: 'no-cache' });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    localStorage.setItem('@cl_keys_cache', JSON.stringify(data));
-    return { source: 'network', data };
-  } catch (e) {
-    const cached = localStorage.getItem('@cl_keys_cache');
-    if (cached) return { source: 'cache', data: JSON.parse(cached) };
-    return { source: 'local', data: { keys: LOCAL_KEYS, notice: '' } };
-  }
+function verifyKey(inputKey) {
+  const clean = (inputKey || '').trim().toUpperCase();
+  if (!clean) return { valid: false, msg: 'Chưa nhập key' };
+  if (clean !== VALID_KEY) return { valid: false, msg: 'Key không đúng' };
+  return { valid: true, tier: VALID_TIER };
 }
 
 /* ============================================================
-   🔐 XÁC MINH KEY
+   🚀 XỬ LÝ XÁC MINH
    ============================================================ */
-async function verifyKey(inputKey) {
-  const clean = inputKey.trim().toUpperCase();
+function handleVerify() {
+  const input = document.getElementById('keyInput');
+  const btn = document.getElementById('btnVerify');
+  if (!input || !btn) return;
 
-  if (!/^[A-Z0-9]+-[A-Z0-9]+-[A-Z0-9]+$/.test(clean)) {
-    return { valid: false, reason: 'format', msg: 'Sai định dạng (VD: DST-000-654)' };
+  const key = input.value.trim();
+
+  if (!key) {
+    Sound.play('error');
+    toast('⚠️ Nhập key đã bạn', 'error');
+    input.focus();
+    return;
   }
 
-  const myHwid = getHWID();
-  const { data } = await fetchKeys();
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> ĐANG XÁC MINH...';
 
-  const record = data.keys.find((k)
+  const result = verifyKey(key);
+
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.innerHTML = '🔓 XÁC MINH KEY';
+
+    if (result.valid) {
+      Sound.play('login');
+
+      try {
+        if (document.getElementById('cbRemember')?.classList.contains('on')) {
+          localStorage.setItem('@cl_key', key.toUpperCase());
+        } else {
+          localStorage.removeItem('@cl_key');
+        }
+        localStorage.setItem('@cl_tier', result.tier);
+        localStorage.setItem('@cl_session', '1');
+      } catch (e) {}
+
+      showScreen('screenLoading');
+      setTimeout(() => enterApp(), 1500);
+
+    } else {
+      Sound.play('error');
+      toast('❌ ' + result.msg, 'error');
+      input.value = '';
+      input.focus();
+    }
+  }, 300);
+}
+
+/* ============================================================
+   🎨 RENDER MENU
+   ============================================================ */
+function getFeatureStates() {
+  try { return JSON.parse(localStorage.getItem('@cl_features') || '{}'); }
+  catch { return {}; }
+}
+
+function saveFeatureStates(states) {
+  localStorage.setItem('@cl_features', JSON.stringify(states));
+}
+
+function renderFeatures(tier) {
+  const states = getFeatureStates();
+  const list = document.getElementById('featuresList');
+  if (!list) return;
+  list.innerHTML = '';
+
+  FEATURES.forEach((f) => {
+    const locked = f.pro && tier !== 'vip';
+    const on = !!states[f.id];
+
+    const card = document.createElement('div');
+    card.className = 'card' + (on ? ' on' : '') + (locked ? ' locked' : '');
+    card.innerHTML = `
+      <div class="card-icon">${f.icon}</div>
+      <div class="card-body">
+        <div class="card-title-row">
+          <span class="card-name">${f.name}</span>
+          ${f.pro ? '<span class="pro-badge">PRO</span>' : ''}
+          ${locked ? '<span class="lock-badge">🔒</span>' : ''}
+        </div>
+        <div class="card-desc">${f.desc}</div>
+      </div>
+      <div class="switch${on ? ' on' : ''}"></div>
+    `;
+
+    card.onclick = () => {
+      Sound.play('click');
+      toggleFeature(f.id, f.pro, tier);
+    };
+    list.appendChild(card);
+  });
+
+  updateActiveCount();
+}
+
+function updateActiveCount() {
+  const states = getFeatureStates();
+  const active = Object.values(states).filter(Boolean).length;
+  const el = document.getElementById('activeCount');
+  if (el) el.textContent = `Bật: ${active}/${FEATURES.length}`;
+}
+
+function toggleFeature(id, pro, tier) {
+  if (pro && tier !== 'vip') {
+    Sound.play('error');
+    toast('👑 Chức năng VIP — cần key VIP', 'error');
+    return;
+  }
+  const states = getFeatureStates();
+  states[id] = !states[id];
+  saveFeatureStates(states);
+  renderFeatures(tier);
+  Sound.play(states[id] ? 'toggleOn' : 'toggleOff');
+  const f = FEATURES.find((x) => x.id === id);
+  toast(`${f.icon} ${f.name} ${states[id] ? 'BẬT' : 'TẮT'}`, states[id] ? 'success' : 'info');
+}
+
+/* ============================================================
+   🎯 VÀO APP
+   ============================================================ */
+function enterApp() {
+  const tier = localStorage.getItem('@cl_tier') || VALID_TIER;
+
+  const badge = document.getElementById('tierBadge');
+  if (badge) {
+    if (tier === 'vip') {
+      badge.textContent = '👑 VIP';
+      badge.classList.add('vip');
+    } else {
+      badge.textContent = '⭐ BASIC';
+      badge.classList.remove('vip');
+    }
+  }
+
+  renderFeatures(tier);
+  showScreen('screenMenu');
+}
+
+/* ============================================================
+   🎮 MỞ FREE FIRE
+   ============================================================ */
+function getPlatform() {
+  const ua = navigator.userAgent || '';
+  if (/android/i.test(ua)) return 'android';
+  if (/iPad|iPhone|iPod/.test(ua)) return 'ios';
+  return 'desktop';
+}
+
+function openViaDeepLink() {
+  const platform = getPlatform();
+  if (platform === 'android') {
+    window.location.href =
+      `intent://launch/#Intent;scheme=freefire;package=${FF_ANDROID_PACKAGE};` +
+      `S.browser_fallback_url=${encodeURIComponent(FF_PLAY_STORE)};end`;
+    return true;
+  }
+  if (platform === 'ios') {
+    const start = Date.now();
+    window.location.href = 'freefire://';
+    setTimeout(() => {
+      if (Date.now() - start < 2500 && !document.hidden) {
+        window.location.href = FF_APP_STORE;
+      }
+    }, 2000);
+    return true;
+  }
+  toast('🖥️ Web không mở được FF trên PC', 'error');
+  return false;
+}
+
+function openViaIntent() {
+  if (getPlatform() !== 'android') {
+    toast('🤖 Chỉ hoạt động trên Android', 'error');
+    return;
+  }
+  const tryPackage = (pkg) => {
+    window.location.href =
+      `intent://#Intent;scheme=android-app;package=${pkg};` +
+      `S.browser_fallback_url=${encodeURIComponent('https://play.google.com/store/apps/details?id=' + pkg)};end`;
+  };
+  tryPackage(FF_ANDROID_PACKAGE);
+  setTimeout(() => { if (!document.hidden) tryPackage(FF_ANDROID_MAX); }, 1500);
+}
+
+function openStore() {
+  if (getPlatform() === 'ios') window.open(FF_APP_STORE, '_blank');
+  else window.open(FF_PLAY_STORE, '_blank');
+}
+
+function openFFModal() {
+  const m = document.getElementById('ffModal');
+  if (m) m.classList.add('show');
+}
+function closeFFModal() {
+  const m = document.getElementById('ffModal');
+  if (m) m.classList.remove('show');
+}
+
+function handleOpenFF() {
+  Sound.play('launch');
+  const btn = document.getElementById('btnOpenFF');
+  if (getPlatform() === 'desktop') {
+    toast('🖥️ Web không mở được FF trên PC', 'error');
+    return;
+  }
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> ĐANG MỞ...';
+  }
+  openViaDeepLink();
+  setTimeout(() => {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '🎮 MỞ FREE FIRE';
+    }
+    if (!document.hidden && getPlatform() === 'android') openFFModal();
+  }, 2000);
+  toast('🚀 Đang mở Free Fire...', 'success');
+}
+
+/* ============================================================
+   ⚡ BẬT/TẮT TẤT CẢ
+   ============================================================ */
+function toggleAll(on) {
+  const tier = localStorage.getItem('@cl_tier') || VALID_TIER;
+  const states = {};
+  FEATURES.forEach((f) => {
+    if (f.pro && tier !== 'vip') return;
+    states[f.id] = on;
+  });
+  saveFeatureStates(states);
+  renderFeatures(tier);
+  Sound.play(on ? 'power' : 'toggleOff');
+  toast(on ? '⚡ Đã bật tất cả' : '⛔ Đã tắt tất cả', on ? 'success' : 'info');
+}
+
+/* ============================================================
+   🚀 KHỞI ĐỘNG
+   ============================================================ */
+function boot() {
+  // Xóa sạch ô input (chống autofill)
+  const inputEl = document.getElementById('keyInput');
+  if (inputEl) {
+    inputEl.value = '';
+    setTimeout(() => {
+      inputEl.removeAttribute('readonly');
+      inputEl.value = '';
+    }, 100);
+    // Xóa lần 2 sau 500ms (chống autofill chậm)
+    setTimeout(() => {
+      if (inputEl.value) inputEl.value = '';
+    }, 500);
+  }
+
+  // Nếu có session cũ → vào thẳng
+  const savedKey = localStorage.getItem('@cl_key');
+  if (savedKey === VALID_KEY && localStorage.getItem('@cl_session') === '1') {
+    setTimeout(() => enterApp(), 300);
+    return;
+  }
+
+  showScreen('screenKey');
+}
+
+/* ============================================================
+   🎯 GẮN SỰ KIỆN
+   ============================================================ */
+function bindEvents() {
+  // Nút âm thanh
+  const btnSound = document.getElementById('btnSound');
+  if (btnSound) {
+    if (!Sound.isEnabled()) {
+      btnSound.textContent = '🔇';
+      btnSound.classList.add('muted');
+    }
+    btnSound.addEventListener('click', () => {
+      const on = Sound.toggle();
+      btnSound.textContent = on ? '🔊' : '🔇';
+      btnSound.classList.toggle('muted', !on);
+      btnSound.classList.add('ping');
+      setTimeout(() => btnSound.classList.remove('ping'), 400);
+      toast(on ? '🔊 Bật âm thanh' : '🔇 Tắt âm thanh', on ? 'success' : 'info');
+    });
+  }
+
+  // Toggle remember
+  const toggleRem = document.getElementById('toggleRemember');
+  if (toggleRem) {
+    toggleRem.addEventListener('click', () => {
+      Sound.play('click');
+      document.getElementById('cbRemember')?.classList.toggle('on');
+    });
+  }
+
+  // Nút XÁC MINH
+  const btnVerify = document.getElementById('btnVerify');
+  if (btnVerify) btnVerify.addEventListener('click', handleVerify);
+
+  // Enter + auto-format
+  const keyInput = document.getElementById('keyInput');
+  if (keyInput) {
+    keyInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleVerify();
+    });
+    keyInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+    });
+  }
+
+  // Logout
+  const btnLogout = document.getElementById('btnLogout');
+  if (btnLogout) {
+    btnLogout.addEventListener('click', () => {
+      Sound.play('bye');
+      localStorage.removeItem('@cl_key');
+      localStorage.removeItem('@cl_session');
+      const input = document.getElementById('keyInput');
+      if (input) input.value = '';
+      showScreen('screenKey');
+      toast('👋 Đã đăng xuất', 'info');
+    });
+  }
+
+  // All on/off
+  document.getElementById('btnAllOn')?.addEventListener('click', () => toggleAll(true));
+  document.getElementById('btnAllOff')?.addEventListener('click', () => toggleAll(false));
+
+  // Mở FF
+  document.getElementById('btnOpenFF')?.addEventListener('click', handleOpenFF);
+  document.getElementById('btnFallback')?.addEventListener('click', () => {
+    Sound.play('click');
+    openFFModal();
+  });
+
+  // Modal options
+  document.querySelectorAll('.modal-option').forEach((opt) => {
+    opt.addEventListener('click', () => {
+      Sound.play('click');
+      const method = opt.dataset.method;
+      closeFFModal();
+      if (method === 'deeplink') openViaDeepLink();
+      else if (method === 'intent') openViaIntent();
+      else if (method === 'store') openStore();
+    });
+  });
+
+  document.getElementById('btnModalCancel')?.addEventListener('click', () => {
+    Sound.play('click');
+    closeFFModal();
+  });
+
+  document.getElementById('ffModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'ffModal') closeFFModal();
+  });
+
+  // Init audio khi chạm lần đầu
+  const initAudio = () => {
+    Sound.init();
+    document.body.removeEventListener('touchstart', initAudio);
+    document.body.removeEventListener('click', initAudio);
+  };
+  document.body.addEventListener('touchstart', initAudio, { once: true });
+  document.body.addEventListener('click', initAudio, { once: true });
+}
+
+/* ============================================================
+   🎬 CHẠY
+   ============================================================ */
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    bindEvents();
+    boot();
+  });
+} else {
+  bindEvents();
+  boot();
+}
+</script>
+</body>
+</html>
