@@ -17,18 +17,49 @@
     user-select: none;
   }
 
-  /* ============ LOGIN SCREEN ============ */
-  #loginScreen {
-    min-height: 100vh;
+  /* ============ NÚT ÂM THANH ============ */
+  .btn-sound {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #111827;
+    border: 1px solid #1f2937;
+    color: #00ff88;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 9999;
     display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    padding: 24px;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .btn-sound:active { transform: scale(0.9); }
+  .btn-sound.muted { color: #4b5563; border-color: #374151; }
+  @keyframes soundPing {
+    0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.6); }
+    100% { box-shadow: 0 0 0 12px rgba(0, 255, 136, 0); }
+  }
+  .btn-sound.ping { animation: soundPing 0.4s ease-out; }
+
+  /* ============ SCREENS ============ */
+  .screen {
+    display: none !important;
+    min-height: 100vh;
     max-width: 480px;
     margin: 0 auto;
+    padding: 24px;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
   }
+  .screen.active { display: flex !important; }
 
-  .logo {
+  /* ============ SCREEN 1: KEY ============ */
+  #screenKey .logo {
     font-size: 28px;
     font-weight: 900;
     color: #00ff88;
@@ -43,17 +74,6 @@
     margin-top: 8px;
     margin-bottom: 24px;
     font-size: 14px;
-  }
-
-  .notice-box {
-    background: #422006;
-    padding: 12px;
-    border-radius: 10px;
-    border-left: 3px solid #fbbf24;
-    margin-bottom: 14px;
-    font-size: 13px;
-    color: #fde047;
-    display: none;
   }
 
   .hwid-box {
@@ -97,7 +117,7 @@
   }
 
   .key-input:focus { border-color: #00ff88; }
-  .key-input::placeholder { color: #4b5563; letter-spacing: 2px; }
+  .key-input::placeholder { color: #4b5563; letter-spacing: 1px; font-weight: 500; }
 
   .toggle-row {
     display: flex;
@@ -172,21 +192,55 @@
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ============ MENU SCREEN ============ */
-  #menuScreen {
-    display: none;
-    min-height: 100vh;
-    padding-bottom: 220px;
+  /* ============ SCREEN 2: LOADING ============ */
+  #screenLoading {
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .loading-ring {
+    width: 80px;
+    height: 80px;
+    border: 4px solid #1f2937;
+    border-top-color: #00ff88;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .loading-text {
+    color: #00ff88;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+
+  .loading-sub {
+    color: #94a3b8;
+    font-size: 13px;
+    margin-top: -12px;
+  }
+
+  /* ============ SCREEN 3: MENU ============ */
+  #screenMenu {
+    justify-content: flex-start;
+    padding-bottom: 230px;
   }
 
   .header {
-    padding: 24px 20px 0;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    margin-bottom: 16px;
   }
 
-  .header .logo { font-size: 20px; text-align: left; }
+  .header .logo {
+    font-size: 20px;
+    font-weight: 900;
+    color: #00ff88;
+    letter-spacing: 2px;
+    text-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+  }
 
   .tier-row {
     display: flex;
@@ -220,11 +274,11 @@
   }
 
   .key-display {
-    margin: 20px 20px 0;
     background: #111827;
     padding: 12px;
     border-radius: 10px;
     border: 1px solid #1f2937;
+    margin-bottom: 16px;
   }
 
   .key-display .divider {
@@ -251,7 +305,6 @@
   }
 
   .features-list {
-    padding: 16px 20px;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -305,7 +358,6 @@
 
   .card-desc { color: #94a3b8; font-size: 12px; margin-top: 3px; }
 
-  /* Toggle switch */
   .switch {
     width: 50px;
     height: 28px;
@@ -335,7 +387,7 @@
     background: #0a0e1a;
   }
 
-  /* ============ ACTION BAR (MỞ FF) ============ */
+  /* ============ ACTION BAR ============ */
   .action-bar {
     position: fixed;
     bottom: 90px;
@@ -400,6 +452,8 @@
     background: #0a0e1a;
     border-top: 1px solid #1f2937;
     z-index: 100;
+    max-width: 480px;
+    margin: 0 auto;
   }
 
   .bottom-bar button {
@@ -420,36 +474,28 @@
   .btn-on { background: #00ff88; color: #0a0e1a; }
   .btn-off { background: #374151; color: #0a0e1a; }
 
-  /* ============ NÚT ÂM THANH ============ */
-  .btn-sound {
+  /* ============ TOAST ============ */
+  #toast {
     position: fixed;
     top: 20px;
-    right: 20px;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-120%);
     background: #111827;
+    color: #fff;
+    padding: 14px 20px;
+    border-radius: 12px;
     border: 1px solid #1f2937;
-    color: #00ff88;
-    font-size: 20px;
-    cursor: pointer;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    font-family: inherit;
+    font-size: 14px;
+    z-index: 10001;
+    transition: transform 0.3s;
+    max-width: 90vw;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   }
 
-  .btn-sound:active { transform: scale(0.9); }
-  .btn-sound.muted { color: #4b5563; border-color: #374151; }
-
-  @keyframes soundPing {
-    0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.6); }
-    100% { box-shadow: 0 0 0 12px rgba(0, 255, 136, 0); }
-  }
-
-  .btn-sound.ping { animation: soundPing 0.4s ease-out; }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.success { border-color: #00ff88; color: #00ff88; }
+  #toast.error { border-color: #ef4444; color: #ef4444; }
 
   /* ============ MODAL ============ */
   .modal-overlay {
@@ -533,74 +579,17 @@
     font-family: inherit;
     margin-top: 8px;
   }
-
-  /* ============ TOAST ============ */
-  #toast {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(-120%);
-    background: #111827;
-    color: #fff;
-    padding: 14px 20px;
-    border-radius: 12px;
-    border: 1px solid #1f2937;
-    font-size: 14px;
-    z-index: 10001;
-    transition: transform 0.3s;
-    max-width: 90vw;
-    text-align: center;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  }
-
-  #toast.show { transform: translateX(-50%) translateY(0); }
-  #toast.success { border-color: #00ff88; color: #00ff88; }
-  #toast.error { border-color: #ef4444; color: #ef4444; }
-
-  /* ============ LOADING ============ */
-  #loading {
-    position: fixed;
-    inset: 0;
-    background: #0a0e1a;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-    gap: 16px;
-  }
-
-  #loading.hide { display: none; }
-
-  #loading .spinner-lg {
-    width: 48px;
-    height: 48px;
-    border: 4px solid #1f2937;
-    border-top-color: #00ff88;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  #loading p { color: #94a3b8; font-size: 14px; }
 </style>
 </head>
 <body>
 
-<!-- ============ NÚT ÂM THANH ============ -->
+<!-- NÚT ÂM THANH -->
 <button class="btn-sound" id="btnSound" title="Bật/tắt âm thanh">🔊</button>
 
-<!-- ============ LOADING ============ -->
-<div id="loading">
-  <div class="spinner-lg"></div>
-  <p>Đang tải...</p>
-</div>
-
-<!-- ============ LOGIN SCREEN ============ -->
-<div id="loginScreen">
+<!-- ============ SCREEN 1: XÁC MINH KEY ============ -->
+<div class="screen active" id="screenKey">
   <div class="logo">🎯 CENTER LOCK</div>
   <div class="sub">Nhập key để mở khóa</div>
-
-  <div id="noticeBox" class="notice-box"></div>
 
   <div class="hwid-box">
     <div class="hwid-label">THIẾT BỊ HIỆN TẠI</div>
@@ -611,7 +600,7 @@
     type="text"
     id="keyInput"
     class="key-input"
-    placeholder="DST-000-654"
+    placeholder="Nhập key..."
     autocomplete="off"
     autocapitalize="characters"
     spellcheck="false"
@@ -622,13 +611,20 @@
     <span class="toggle-text">Ghi nhớ key</span>
   </div>
 
-  <button class="btn-main" id="btnVerify">🔓 XÁC MINH</button>
+  <button class="btn-main" id="btnVerify">🔓 XÁC MINH KEY</button>
 
-  <div class="hint">Key mặc định: DST-000-654</div>
+  <div class="hint">Liên hệ admin để nhận key</div>
 </div>
 
-<!-- ============ MENU SCREEN ============ -->
-<div id="menuScreen">
+<!-- ============ SCREEN 2: LOADING ============ -->
+<div class="screen" id="screenLoading">
+  <div class="loading-ring"></div>
+  <div class="loading-text">✅ KEY HỢP LỆ</div>
+  <div class="loading-sub">Đang vào app...</div>
+</div>
+
+<!-- ============ SCREEN 3: MENU CHỨC NĂNG ============ -->
+<div class="screen" id="screenMenu">
   <div class="header">
     <div style="flex:1">
       <div class="logo">🎯 CENTER LOCK</div>
@@ -650,35 +646,33 @@
 
   <div class="features-list" id="featuresList"></div>
 
-  <!-- Nút mở FF -->
   <div class="action-bar">
     <button class="btn-ff" id="btnOpenFF">🎮 MỞ FREE FIRE</button>
     <button class="btn-fallback" id="btnFallback" title="Mở bằng cách khác">↗</button>
   </div>
 
-  <!-- Bottom bar -->
   <div class="bottom-bar">
     <button class="btn-on" id="btnAllOn">⚡ BẬT TẤT CẢ</button>
     <button class="btn-off" id="btnAllOff">⛔ TẮT TẤT CẢ</button>
   </div>
 </div>
 
-<!-- ============ MODAL MỞ FF ============ -->
+<!-- MODAL MỞ FF -->
 <div class="modal-overlay" id="ffModal">
   <div class="modal-sheet">
     <div class="modal-title">🎮 Mở Free Fire</div>
-    <div class="modal-sub">Chọn cách mở phù hợp với thiết bị</div>
+    <div class="modal-sub">Chọn cách mở phù hợp</div>
 
     <div class="modal-option" data-method="deeplink">
       <div class="icon">📱</div>
       <div class="text">
         <div class="title">Mở trực tiếp FF</div>
-        <div class="desc">Dùng deep link — nhanh nhất</div>
-      </div🤖>
+        <div class="desc">Deep link — nhanh nhất</div>
+      </div>
     </div>
 
-    <div class="modal-</option" data-method="intentdiv">
-      <div class="icon">>
+    <div class="modal-option" data-method="intent">
+      <div class="icon">🤖</div>
       <div class="text">
         <div class="title">Mở bằng Android Intent</div>
         <div class="desc">Chỉ hoạt động trên Android</div>
@@ -689,33 +683,29 @@
       <div class="icon">🏪</div>
       <div class="text">
         <div class="title">Mở cửa hàng ứng dụng</div>
-        <div class="desc">CH Play / App Store (an toàn nhất)</div>
+        <div class="desc">CH Play / App Store</div>
       </div>
     </div>
 
-    <button class="modal-cancel" onclick="closeFFModal()">Hủy</button>
+    <button class="modal-cancel" id="btnModalCancel">Hủy</button>
   </div>
 </div>
 
-<!-- ============ TOAST ============ -->
 <div id="toast"></div>
 
 <script>
 /* ============================================================
-   🔊 SOUND ENGINE — Web Audio API
+   🔊 SOUND ENGINE
    ============================================================ */
 const Sound = (() => {
   let ctx = null;
   let enabled = localStorage.getItem('@cl_sound') !== 'off';
-  let volume = 0.25;
+  const volume = 0.25;
 
   function init() {
     if (!ctx) {
-      try {
-        ctx = new (window.AudioContext || window.webkitAudioContext)();
-      } catch (e) {
-        console.warn('AudioContext không khả dụng');
-      }
+      try { ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch (e) { console.warn('AudioContext lỗi'); }
     }
     if (ctx && ctx.state === 'suspended') ctx.resume();
   }
@@ -756,46 +746,15 @@ const Sound = (() => {
   }
 
   const sounds = {
-    click:   () => tone({ freq: 800, duration: 0.05, type: 'square', vol: 0.5 }),
-    toggleOn: () => melody([
-      { freq: 660, duration: 0.08 },
-      { freq: 990, duration: 0.12 },
-    ], 0.05),
-    toggleOff: () => melody([
-      { freq: 660, duration: 0.08 },
-      { freq: 440, duration: 0.12 },
-    ], 0.05),
-    success: () => melody([
-      { freq: 523, duration: 0.12 },
-      { freq: 659, duration: 0.12 },
-      { freq: 784, duration: 0.2 },
-    ], 0.1),
-    error: () => melody([
-      { freq: 330, duration: 0.15, type: 'sawtooth' },
-      { freq: 262, duration: 0.25, type: 'sawtooth' },
-    ], 0.12),
-    launch: () => melody([
-      { freq: 400, duration: 0.05 },
-      { freq: 600, duration: 0.05 },
-      { freq: 800, duration: 0.05 },
-      { freq: 1200, duration: 0.15 },
-    ], 0.04),
-    power: () => melody([
-      { freq: 523, duration: 0.08 },
-      { freq: 659, duration: 0.08 },
-      { freq: 784, duration: 0.08 },
-      { freq: 1047, duration: 0.2 },
-    ], 0.08),
-    bye: () => melody([
-      { freq: 523, duration: 0.12 },
-      { freq: 392🎯, duration: 0.2 },
-    ],', 0.1),
-    login: () => desc melody([
-      { freq:: 392, duration: 0.1 },
-      ' { freq: 523, duration: 0.1 },
-      { freq: 659, duration: 0.1 },
-      { freq: 784, duration: 0.25 },
-    ], 0.08),
+    click: () => tone({ freq: 800, duration: 0.05, type: 'square', vol: 0.5 }),
+    toggleOn: () => melody([{ freq: 660, duration: 0.08 }, { freq: 990, duration: 0.12 }], 0.05),
+    toggleOff: () => melody([{ freq: 660, duration: 0.08 }, { freq: 440, duration: 0.12 }], 0.05),
+    success: () => melody([{ freq: 523, duration: 0.12 }, { freq: 659, duration: 0.12 }, { freq: 784, duration: 0.2 }], 0.1),
+    error: () => melody([{ freq: 330, duration: 0.15, type: 'sawtooth' }, { freq: 262, duration: 0.25, type: 'sawtooth' }], 0.12),
+    launch: () => melody([{ freq: 400, duration: 0.05 }, { freq: 600, duration: 0.05 }, { freq: 800, duration: 0.05 }, { freq: 1200, duration: 0.15 }], 0.04),
+    power: () => melody([{ freq: 523, duration: 0.08 }, { freq: 659, duration: 0.08 }, { freq: 784, duration: 0.08 }, { freq: 1047, duration: 0.2 }], 0.08),
+    bye: () => melody([{ freq: 523, duration: 0.12 }, { freq: 392, duration: 0.2 }], 0.1),
+    login: () => melody([{ freq: 392, duration: 0.1 }, { freq: 523, duration: 0.1 }, { freq: 659, duration: 0.1 }, { freq: 784, duration: 0.25 }], 0.08),
   };
 
   return {
@@ -808,10 +767,7 @@ const Sound = (() => {
     toggle() {
       enabled = !enabled;
       localStorage.setItem('@cl_sound', enabled ? 'on' : 'off');
-      if (enabled) {
-        init();
-        setTimeout(() => this.play('toggleOn'), 50);
-      }
+      if (enabled) { init(); setTimeout(() => this.play('toggleOn'), 50); }
       return enabled;
     },
     isEnabled() { return enabled; },
@@ -820,10 +776,10 @@ const Sound = (() => {
 })();
 
 /* ============================================================
-   🎮 CẤU HÌNH CHỨC NĂNG
+   🎮 CẤU HÌNH
    ============================================================ */
 const FEATURES = [
-  { id: 'aimlock', name: 'Aimlock',  icon: 'Khóa tâm tự động',      pro: false },
+  { id: 'aimlock', name: 'Aimlock',  icon: '🎯', desc: 'Khóa tâm tự động',      pro: false },
   { id: 'nhetam',  name: 'Nhẹ tâm',  icon: '🧘', desc: 'Giảm giật khi ngắm',   pro: false },
   { id: 'bamdan',  name: 'Bám đầu',  icon: '🎪', desc: 'Theo dõi đầu đối thủ', pro: true  },
   { id: 'fixrung', name: 'Fix rung', icon: '📳', desc: 'Chống rung màn hình',  pro: false },
@@ -832,13 +788,19 @@ const FEATURES = [
   { id: 'aimco',   name: 'Aimco',    icon: '🎯', desc: 'Tâm ngắm tùy chỉnh',   pro: false },
 ];
 
-/* 🔑 KEY OFFLINE */
+/* 🔑 KEY DUY NHẤT ĐƯỢC CHẤP NHẬN */
 const LOCAL_KEYS = [
   { key: 'DST-000-654', tier: 'vip', active: true, expires: null, maxDevices: 5, hwids: [] },
 ];
 
-/* 🔗 Link keys.json (để trống nếu chỉ dùng LOCAL_KEYS) */
 const KEYS_URL = '';
+
+/* FF Config */
+const FF_ANDROID_PACKAGE = 'com.dts.freefireth';
+const FF_ANDROID_MAX = 'com.dts.freefiremax';
+const FF_IOS_ID = '1300146617';
+const FF_PLAY_STORE = `https://play.google.com/store/apps/details?id=${FF_ANDROID_PACKAGE}`;
+const FF_APP_STORE = `https://apps.apple.com/vn/app/id${FF_IOS_ID}`;
 
 /* ============================================================
    🆔 HWID
@@ -861,9 +823,18 @@ function toast(msg, type = 'info') {
   el.textContent = msg;
   el.className = 'show ' + type;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    el.className = type;
-  }, 2500);
+  toastTimer = setTimeout(() => { el.className = type; }, 2500);
+}
+
+/* ============================================================
+   🖥️ CHUYỂN SCREEN
+   ============================================================ */
+function showScreen(id) {
+  const target = document.getElementById(id);
+  if (!target) return;
+  document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
+  target.classList.add('active');
+  window.scrollTo(0, 0);
 }
 
 /* ============================================================
@@ -898,75 +869,4 @@ async function verifyKey(inputKey) {
   const myHwid = getHWID();
   const { data } = await fetchKeys();
 
-  const record = data.keys.find((k) => k.key === clean);
-  if (!record) return { valid: false, reason: 'invalid', msg: 'Key không tồn tại' };
-  if (!record.active) return { valid: false, reason: 'banned', msg: 'Key đã bị khóa' };
-  if (record.expires && Date.now() > new Date(record.expires).getTime()) {
-    return { valid: false, reason: 'expired', msg: 'Key hết hạn ' + record.expires };
-  }
-
-  const hwids = record.hwids || [];
-  const maxDev = record.maxDevices || 1;
-  const bound = hwids.includes(myHwid);
-
-  if (!bound) {
-    if (hwids.length >= maxDev) {
-      return { valid: false, reason: 'device_limit', msg: `Key đã dùng ${maxDev}/${maxDev} thiết bị` };
-    }
-    registerHWIDLocal(clean, myHwid);
-    return {
-      valid: true,
-      tier: record.tier || 'basic',
-      isNewDevice: true,
-      slotsLeft: maxDev - (hwids.length + 1),
-      hwid: myHwid,
-    };
-  }
-
-  return {
-    valid: true,
-    tier: record.tier || 'basic',
-    isNewDevice: false,
-    slotsLeft: maxDev - hwids.length,
-    hwid: myHwid,
-  };
-}
-
-function registerHWIDLocal(key, hwid) {
-  try {
-    const raw = localStorage.getItem('@cl_hwid_registry') || '{}';
-    const reg = JSON.parse(raw);
-    reg[key] = reg[key] || [];
-    if (!reg[key].includes(hwid)) reg[key].push(hwid);
-    localStorage.setItem('@cl_hwid_registry', JSON.stringify(reg));
-  } catch (e) {}
-}
-
-/* ============================================================
-   🎨 RENDER MENU
-   ============================================================ */
-function getFeatureStates() {
-  try { return JSON.parse(localStorage.getItem('@cl_features') || '{}'); }
-  catch { return {}; }
-}
-
-function saveFeatureStates(states) {
-  localStorage.setItem('@cl_features', JSON.stringify(states));
-}
-
-function renderFeatures(tier) {
-  const states = getFeatureStates();
-  const list = document.getElementById('featuresList');
-  list.innerHTML = '';
-
-  FEATURES.forEach((f) => {
-    const locked = f.pro && tier !== 'vip';
-    const on = !!states[f.id];
-
-    const card = document.createElement('div');
-    card.className = 'card' + (on ? ' on' : '') + (locked ? ' locked' : '');
-    card.innerHTML = `
-      <div class="card-icon">${f.icon}</div>
-      <div class="card-body">
-        <div class="card-title-row">
-          <span class="card-name">${f
+  const record = data.keys.find((k)
